@@ -119,7 +119,7 @@ The `anouncements` table includes:
 * `id`, which specifies the unique ID for the announcement as an `INTEGER`. This column thus has the `PRIMARY KEY` constraint applied.
 * `competition_id`, which specifies the ID of the competition to clarify one or many points in one or more problems or submissions as an `INTEGER`. This column thus has the `FOREIGN KEY` constraint applied, referencing the `id` column in the `competitions` table, which ensures that each announcement be referenced back to a competition.
 * `content`,the announcement content as `TEXT`, `NOT NULL` written by the competition creator.
-* #### Teams_Competitions
+#### Teams_Competitions
 
 The `teams_competitions` table includes:
 

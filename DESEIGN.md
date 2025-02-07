@@ -59,11 +59,11 @@ The `competitions` table includes:
 * `id`, which specifies the unique ID for the compeition as an `INTEGER`. This column thus has the `PRIMARY KEY` constraint applied.
 *`creator_id`,which specifies the ID of the user who created the competition  This column thus has the `FOREIGN KEY`that references the `user` table constraint applied.
 * `name`, which specifies the competition name as `TEXT` .This column thus has the `NOT NULL` constraint applied.
-*`duration` ,  which specifies the competition duration in hours as `Numeric` and `NOT NULL` constraint applied.
-*`starting_time`, which is the timestamp at which the competition start.
-*`ending_time`, which is the timestamp at which the competition end.
-*`scoreboard_type`, which is the type of the scoreboard as `TEXT`,`NOT NULL` ,`CHECK IN(pass-fail,score)` and `DEFAULT pass-fail`.
-*`penalty_time` , Penalty time for a wrong submission. Only relevant if scoreboard_type is pass-fail.
+* `duration` ,  which specifies the competition duration in hours as `Numeric` and `NOT NULL` constraint applied.
+* `starting_time`, which is the timestamp at which the competition start.
+* `ending_time`, which is the timestamp at which the competition end.
+* `scoreboard_type`, which is the type of the scoreboard as `TEXT`,`NOT NULL` ,`CHECK IN(pass-fail,score)` and `DEFAULT pass-fail`.
+* `penalty_time` , Penalty time for a wrong submission. Only relevant if scoreboard_type is pass-fail.
 
 #### Problems
 

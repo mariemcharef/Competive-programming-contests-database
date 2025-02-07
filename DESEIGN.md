@@ -71,11 +71,11 @@ The `problems` table includes:
 
 * `id`, which specifies the unique ID for the instructor as an `INTEGER`. This column thus has the `PRIMARY KEY` constraint applied.
 * `competition_id`, which specifies the unique ID for the competition as an `INTEGER`. This column thus has the `FOREIGN KEY` that references the `competition` table constraint applied.
-*`label` , Label of the problem on the scoreboard, as `TEXT` typically a single capitalized letter and `NOT NULL`.
+* `label` , Label of the problem on the scoreboard, as `TEXT` typically a single capitalized letter and `NOT NULL`.
 * `name`, which is the name of the problem set as `TEXT`.This column thus has the `UNIQUE` and `NOT NULL` constraint applied.
-*`ordinal` , A unique number that determines the order the problems as `INTEGER` and `NOT NULL`.
-*`time_limit` , Time limit in seconds per test data set (i.e. per single run). Should be a `NUMERIC` multiple of 0.001 and `NOT NULL`.
-*`test_data_count`, the number of test cases as `INTEGER`and `NOT NULL`.
+* `ordinal` , A unique number that determines the order the problems as `INTEGER` and `NOT NULL`.
+* `time_limit` , Time limit in seconds per test data set (i.e. per single run). Should be a `NUMERIC` multiple of 0.001 and `NOT NULL`.
+* `test_data_count`, the number of test cases as `INTEGER`and `NOT NULL`.
 
 #### Test_cases
 
@@ -99,7 +99,7 @@ The `submissions` table includes:
 * `id`, which specifies the unique ID for the submission as an `INTEGER`. This column thus has the `PRIMARY KEY` constraint applied.
 * `team_id`, which is the ID of the user who made the submission as an `INTEGER`. This column thus has the `FOREIGN KEY` constraint applied, referencing the `id` column in the `team` table to ensure data integrity.
 * `problem_id`, which is the ID of the problem which the submission solves as an `INTEGER`. This column thus has the `FOREIGN KEY` constraint applied, referencing the `id` column in the `problems` table to ensure data integrity.
-*`time`, `timestamp` of when the submission was made, defaults to the current timestamp when a new row is inserted.
+* `time`, `timestamp` of when the submission was made, defaults to the current timestamp when a new row is inserted.
 * `language`, Identifier of the language submitted for `TEXT`, `CHECK IN(ada,c,cpp,csharp,go,haskell,java,javascript,kotlin,objectivec,pascal,php,prolog,python2,python3,ruby,rust,scala)` and `NOT NULL`.
 * `judgement`,the result of the submition `CHECK IN (in_queue,accepted,wrong_answer,time_limit_exceeded,memory_limit_exceeded,compilation_error)`, `DEFAULT in_queue`.
 
@@ -109,7 +109,7 @@ The `clarifications` table includes:
 
 * `id`, which specifies the unique ID for the clarification as an `INTEGER`. This column thus has the `PRIMARY KEY` constraint applied.
 * `team_id`, which specifies the ID of the team who asked for the clarification as an `INTEGER`. This column thus has the `FOREIGN KEY` constraint applied, referencing the `id` column in the `teams` table, which ensures that each clarification be referenced back to a team.
-*`problem_id`, which specifies the ID of the problem for which clarification has been requeste as an `INTEGER`. This column thus has the `FOREIGN KEY` constraint applied, referencing the `id` column in the `problems` table, which ensures that each clarification be referenced back to a problem.
+* `problem_id`, which specifies the ID of the problem for which clarification has been requeste as an `INTEGER`. This column thus has the `FOREIGN KEY` constraint applied, referencing the `id` column in the `problems` table, which ensures that each clarification be referenced back to a problem.
 * `content`,the clarification content as `TEXT`, `NOT NULL`.
 
 #### Anouncements

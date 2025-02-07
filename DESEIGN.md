@@ -52,6 +52,13 @@ The `teams` table includes:
 * `team_name`, which specifies the team  name as `TEXT`. This column thus has the `NOT NULL` constraint applied.
 * `users`, which specifies the number of users within this team as `INTEGER`. This column has the `CHECK users IN (1,2,3)` , `DEFAULT 1`.
 
+#### User_Teams
+
+The `user_teams` table includes:
+
+* `user_id`,  which specifies the unique ID for the user as an `INTEGER`. This column thus has the `FOREIGN KEY` that references the `users` table constraint applied.
+* `team_id`, which specifies the unique ID for the team as an `INTEGER`. This column thus has the `FOREIGN KEY` that references the `teams` table constraint applied.
+  
 #### Competitions
 
 The `competitions` table includes:
@@ -64,7 +71,16 @@ The `competitions` table includes:
 * `ending_time`, which is the timestamp at which the competition end.
 * `scoreboard_type`, which is the type of the scoreboard as `TEXT`,`NOT NULL` ,`CHECK IN(pass-fail,score)` and `DEFAULT pass-fail`.
 * `penalty_time` , Penalty time for a wrong submission. Only relevant if scoreboard_type is pass-fail.
+  
+#### Teams_Competitions
 
+The `teams_competitions` table includes:
+
+* `competition_id`,  which specifies the unique ID for the competition as an `INTEGER`. This column thus has the `FOREIGN KEY` that references the `competitions` table constraint applied.
+* `team_id`, which specifies the unique ID for the team as an `INTEGER`. This column thus has the `FOREIGN KEY` that references the `teams` table constraint applied.
+* `score`, which the score of the team in this competition as `INTEGER`,`DEFAULT 0`.
+* `rank`, which the rank of the team in this competition as `INTEGER`.
+  
 #### Problems
 
 The `problems` table includes:
@@ -91,6 +107,13 @@ The `topics` table includes:
 
 * `id`, which specifies the unique ID for the topic as an `INTEGER`. This column thus has the `PRIMARY KEY` constraint applied.
 * `name`, the name of the topic as `TEXT`, `NOT NULL`.
+
+#### Problems_Topics
+
+The `problems_topics` table includes:
+
+* `problem_id`,  which specifies the unique ID for the problem as an `INTEGER`. This column thus has the `FOREIGN KEY` that references the `problems` table constraint applied.
+* `topic_id`, which specifies the unique ID for the topic as an `INTEGER`. This column thus has the `FOREIGN KEY` that references the `topics` table constraint applied.
 
 #### Submissions
 
@@ -119,26 +142,7 @@ The `anouncements` table includes:
 * `id`, which specifies the unique ID for the announcement as an `INTEGER`. This column thus has the `PRIMARY KEY` constraint applied.
 * `competition_id`, which specifies the ID of the competition to clarify one or many points in one or more problems or submissions as an `INTEGER`. This column thus has the `FOREIGN KEY` constraint applied, referencing the `id` column in the `competitions` table, which ensures that each announcement be referenced back to a competition.
 * `content`,the announcement content as `TEXT`, `NOT NULL` written by the competition creator.
-#### Teams_Competitions
 
-The `teams_competitions` table includes:
-
-* `competition_id`,  which specifies the unique ID for the competition as an `INTEGER`. This column thus has the `FOREIGN KEY` that references the `competitions` table constraint applied.
-* `team_id`, which specifies the unique ID for the team as an `INTEGER`. This column thus has the `FOREIGN KEY` that references the `teams` table constraint applied.
-* `score`, which the score of the team in this competition as `INTEGER`,`DEFAULT 0`.
-* `rank`, which the rank of the team in this competition as `INTEGER`.
-
-#### Problems_Topics
-The `problems_topics` table includes:
-
-* `problem_id`,  which specifies the unique ID for the problem as an `INTEGER`. This column thus has the `FOREIGN KEY` that references the `problems` table constraint applied.
-* `topic_id`, which specifies the unique ID for the topic as an `INTEGER`. This column thus has the `FOREIGN KEY` that references the `topics` table constraint applied.
-#### User_Teams
-
-The `user_teams` table includes:
-
-* `user_id`,  which specifies the unique ID for the user as an `INTEGER`. This column thus has the `FOREIGN KEY` that references the `users` table constraint applied.
-* `team_id`, which specifies the unique ID for the team as an `INTEGER`. This column thus has the `FOREIGN KEY` that references the `teams` table constraint applied.
 
 ### Relationships
 

@@ -38,8 +38,8 @@ The database includes the following entities:
 The `users` table includes:
 
 * `id`, which specifies the unique ID for the user as an `INTEGER`. This column thus has the `PRIMARY KEY` constraint applied.
-* `username`, which specifies the username as `TEXT`, given `TEXT` is appropriate for name fields. This column thus has the `NOT NULL` constraint applied.
-* `mail`, which specifies the user's email as `TEXT`.
+* `username`, which specifies the username as `TEXT`, given `TEXT` is appropriate for name fields. This column thus has the `NOT NULL` and `UNIQUE` constraint applied.
+* `mail`, which specifies the user's email as `TEXT`,and `UNIQUE`.
  This column thus has the `NOT NULL` constraint applied.
 * `password`, which specifies the user's password,given `TEXT` is appropriate for name fields . This column thus has the `NOT NULL` constraint applied.
 * `rating`, which specifies when the user's rating. type of `INTEGER` and `DEFAULT 0` AS a default value.
@@ -133,13 +133,13 @@ The `problems_topics` table includes:
 
 * `problem_id`,  which specifies the unique ID for the problem as an `INTEGER`. This column thus has the `FOREIGN KEY` that references the `problems` table constraint applied.
 * `topic_id`, which specifies the unique ID for the topic as an `INTEGER`. This column thus has the `FOREIGN KEY` that references the `topics` table constraint applied.
-#### Test_cases
+#### User_Teams
 
-The `test_cases` table includes:
+The `user_teams` table includes:
 
-* `id`, which specifies the unique ID for the test_case as an `INTEGER`. This column thus has the `PRIMARY KEY` constraint applied.
-* `problem_id`, which is the ID of the problem which the test case associated to as an `INTEGER`. This column thus has the `FOREIGN KEY` constraint applied, referencing the `id` column in the `problems` table to ensure data integrity.
-* `content`, which the input , output and explanation if it is necessary as `TEXT`.
+* `user_id`,  which specifies the unique ID for the user as an `INTEGER`. This column thus has the `FOREIGN KEY` that references the `users` table constraint applied.
+* `team_id`, which specifies the unique ID for the team as an `INTEGER`. This column thus has the `FOREIGN KEY` that references the `teams` table constraint applied.
+
 ### Relationships
 
 The below entity relationship diagram describes the relationships among the entities in the database.

@@ -164,7 +164,10 @@ As detailed by the diagram:
 
 ## Optimizations
 
-Per the typical queries in `queries.sql`, it is common for users of the database to access all submissions submitted by any particular team. For that reason, indexes are created on the `username` column to speed the identification of students by those columns.
+Per the typical queries in `queries.sql`, it is common for users of the database to access all submissions submitted by any particular team. For that reason, indexes are created on the `team_name` column to speed the identification of teams by those columns.
 
 Similarly, it is also common practice for a user of the database to concerned with viewing all teams who make subbmissions to a particular problem. As such, an index is created on the `name` column in the `problems` table to speed the identification of problems by name.
 
+Also, it is common practice for a database user to view the results of any competition as a table of teams sorted by rank. AS such,A view is created to sort all teams by their rank in a competition.
+
+## Limitation

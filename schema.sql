@@ -39,6 +39,7 @@ CREATE TABLE
         "ordinal" INTEGER NOT NULL,
         "time_limit" NUMERIC NOT NULL,
         "test_data_count" INTEGER NOT NULL,
+        "content" TEXT NOT NULL,
         PRIMARY KEY ("id"),
         FOREIGN KEY ("competition_id") REFERENCES "competitions" ("id")
     );
@@ -48,7 +49,9 @@ CREATE TABLE
         "id" INTEGER,
         "problem_id" INTEGER NOT NULL,
         "duration" NUMERIC NOT NULL,
-        "content" TEXT,
+        "input" TEXT NOT NULL,
+        "output" TEXT NOT NULL,
+        "explanation" TEXT,
         PRIMARY KEY ("id"),
         FOREIGN KEY ("problem_id") REFERENCES "problems" ("id")
     );
@@ -98,6 +101,7 @@ CREATE TABLE
                 'compilation_error'
             )
         ) DEFAULT 'in_queue',
+        "code" TEXT NOT NULL,
         PRIMARY KEY ("id"),
         FOREIGN KEY ("team_id") REFERENCES "teams" ("id"),
         FOREIGN KEY ("problem_id") REFERENCES "problems" ("id")
@@ -165,4 +169,5 @@ FROM
     JOIN "teams" ON "teams_competitions"."team_id" = "teams"."id"
     JOIN "competitions" ON "competitions"."id" = "teams_competitions"."competition_id"
 ORDER BY
-    "rank" ASC;
+    "rank" AS
+

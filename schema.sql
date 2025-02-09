@@ -1,21 +1,27 @@
+--table users
+
+CREATE TABLE
+    "submitters" (
+        "id" INTEGER,
+        "name" TEXT NOT NULL UNIQUE,
+        PRIMARY KEY ("id")
+    );
 CREATE TABLE
     "users" (
         "id" INTEGER,
-        "username" TEXT NOT NULL UNIQUE,
         "mail" TEXT NOT NULL UNIQUE,
         "password" TEXT NOT NULL,
         "rating" INTEGER DEFAULT 0,
-        PRIMARY KEY ("id")
+       FOREIGN KEY ("id") REFERENCES "submitters" ("id")ON DELETE CASCADE
     );
-
+--table teams
 CREATE TABLE
     "teams" (
         "id" INTEGER,
-        "team_name" TEXT NOT NULL UNIQUE,
-        "users" INTEGER DEFAULT 1 CHECK ("users" IN (1, 2, 3)),
-        PRIMARY KEY ("id")
+        "users" INTEGER DEFAULT 2 CHECK ("users" IN (2, 3)),
+        FOREIGN KEY ("id") REFERENCES "submitters" ("id")ON DELETE CASCADE
     );
-
+--table competitions
 CREATE TABLE
     "competitions" (
         "id" INTEGER,
@@ -24,49 +30,47 @@ CREATE TABLE
         "duration" NUMERIC NOT NULL,
         "starting_time" NUMERIC,
         "ending_time" NUMERIC,
-        "scoreboard_type" TEXT NOT NULL CHECK ("scoreboard_type" IN ("pass_fail", "score")) DEFAULT "pass_fail",
         "penalty_time" INTEGER NOT NULL DEFAULT 20,
         PRIMARY KEY ("id"),
         FOREIGN KEY ("creator_id") REFERENCES "users" ("id")
     );
-
+--table problems
 CREATE TABLE
     "problems" (
         "id" INTEGER,
         "competition_id" INTEGER NOT NULL,
         "label" TEXT NOT NULL,
         "name" TEXT NOT NULL,
-        "ordinal" INTEGER NOT NULL,
         "time_limit" NUMERIC NOT NULL,
-        "test_data_count" INTEGER NOT NULL,
+        "memory_limit" INTEGER NOT NULL,
         "content" TEXT NOT NULL,
         PRIMARY KEY ("id"),
         FOREIGN KEY ("competition_id") REFERENCES "competitions" ("id")
     );
-
+--table test_cases
 CREATE TABLE
     "test_cases" (
         "id" INTEGER,
         "problem_id" INTEGER NOT NULL,
-        "duration" NUMERIC NOT NULL,
         "input" TEXT NOT NULL,
         "output" TEXT NOT NULL,
         "explanation" TEXT,
+        "hidden" INTEGER DEFAULT 1 NOT NULL CHECK(hidden in(0,1)),
         PRIMARY KEY ("id"),
         FOREIGN KEY ("problem_id") REFERENCES "problems" ("id")
     );
-
+--table topics
 CREATE TABLE
     "topics" (
         "id" INTEGER,
         "name" TEXT NOT NULL,
         PRIMARY KEY ("id")
     );
-
+--table submissions
 CREATE TABLE
     "submissions" (
         "id" INTEGER,
-        "team_id" INTEGER,
+        "submitter_id" INTEGER,
         "problem_id" INTEGER,
         "time" NUMERIC NOT NULL DEFAULT CURRENT_TIMESTAMP,
         "language" TEXT NOT NULL CHECK (
@@ -103,21 +107,21 @@ CREATE TABLE
         ) DEFAULT 'in_queue',
         "code" TEXT NOT NULL,
         PRIMARY KEY ("id"),
-        FOREIGN KEY ("team_id") REFERENCES "teams" ("id"),
+        FOREIGN KEY ("submitter_id") REFERENCES "submitters" ("id"),
         FOREIGN KEY ("problem_id") REFERENCES "problems" ("id")
     );
-
+--table clarifications
 CREATE TABLE
     "clarifications" (
         "id" INTEGER,
-        "team_id" INTEGER,
+        "submitter_id" INTEGER,
         "problem_id" INTEGER,
         "content" TEXT NOT NULL,
         PRIMARY KEY ("id"),
         FOREIGN KEY ("problem_id") REFERENCES "problems" ("id"),
-        FOREIGN KEY ("team_id") REFERENCES "teams" ("id")
+        FOREIGN KEY ("submitter_id") REFERENCES "submitters" ("id")
     );
-
+--table announcements
 CREATE TABLE
     "announcements" (
         "id" INTEGER,
@@ -126,48 +130,43 @@ CREATE TABLE
         PRIMARY KEY ("id"),
         FOREIGN KEY ("competition_id") REFERENCES "competitions" ("id")
     );
-
+--table teams competitions to specify the team participation in a competition
 CREATE TABLE
     "teams_competitions" (
         "competition_id" INTEGER,
-        "team_id" TEXT NOT NULL UNIQUE,
+        "submitter_id" TEXT NOT NULL UNIQUE,
         "score" INTEGER DEFAULT "0",
         "rank" INTEGER,
-        PRIMARY KEY ("competition_id", "team_id")
+        PRIMARY KEY ("competition_id", "submitter_id"),
+        FOREIGN KEY ("competition_id") REFERENCES "competitions" ("id"),
+        FOREIGN KEY ("submitter_id") REFERENCES "submitters" ("id")
     );
-
+-- table problem topics , to describe topics associated to a problem
 CREATE TABLE
     "problems_topics" (
         "problem_id" INTEGER,
         "topic_id" TEXT NOT NULL UNIQUE,
-        PRIMARY KEY ("problem_id", "topic_id")
+        PRIMARY KEY ("problem_id", "topic_id"),
+        FOREIGN KEY ("problem_id") REFERENCES "problems" ("id"),
+        FOREIGN KEY ("topic_id") REFERENCES "topics" ("id")
     );
-
+-- to enumerate team members
 CREATE TABLE
     "user_teams" (
         "user_id" INTEGER,
         "team_id" TEXT NOT NULL UNIQUE,
-        PRIMARY KEY ("user_id", "team_id")
+        PRIMARY KEY ("user_id", "team_id"),
+        FOREIGN KEY ("user_id") REFERENCES "users" ("id"),
+        FOREIGN KEY ("teams_id") REFERENCES "teams" ("id")
     );
-
+--index to facilitate search of users
 CREATE INDEX "user_name_search" ON "users" ("username");
-
+--index to facilitate search of teams
 CREATE INDEX "team_name_search" ON "teams" ("team_name");
-
+--index to facilitate search of problems
 CREATE INDEX "problem_name_search" ON "problems" ("name");
+--view competitions results
 
 DROP view "scoreboard";
 
-CREATE VIEW
-    "scoreboard" AS
-SELECT
-    "competitions"."name" AS "competition",
-    "teams"."team_name" AS "team",
-    "teams_competitions"."rank" AS "rank"
-FROM
-    "teams_competitions"
-    JOIN "teams" ON "teams_competitions"."team_id" = "teams"."id"
-    JOIN "competitions" ON "competitions"."id" = "teams_competitions"."competition_id"
-ORDER BY
-    "rank" AS
 

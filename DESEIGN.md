@@ -39,7 +39,7 @@ The `submitters` table includes:
 
 * `id`, which specifies the unique ID for the submitter as an `INTEGER`. This column thus has the `PRIMARY KEY` constraint applied.
 * `name`, which specifies the name as `TEXT`, given `TEXT` is appropriate for name fields. This column thus has the `NOT NULL` and `UNIQUE` constraint applied.
-
+* "type" , the type of the submmitter ,`TEXT`,`NOT NULL` and `CHECH IN("user,"team")`.
 #### Users
 
 The `users` table includes:

@@ -13,34 +13,34 @@ VALUES
 
 
 
-INSERT INTO "teams" ("id", "name", "users")
+INSERT INTO "participants" ("id", "name", "users")
 VALUES
-    (11, 'Alpha Coders', 2),  -- Team with 2 members
-    (12, 'Byte Masters', 3),  -- Team with 3 members
+    (11, 'Alpha Coders', 2),  -- participant with 2 members(team)
+    (12, 'Byte Masters', 3),  -- participant with 3 members(team)
     (13, 'Code Warriors', 2),
     (14, 'Dev Dynamos', 3),
     (15, 'Elite Hackers', 2);
-INSERT INTO "user_teams" ("user_id", "team_id")
+INSERT INTO "user_participants" ("user_id", "participant_id")
 VALUES
-    -- Alpha Coders (Team ID: 11)
+    -- Alpha Coders (participant ID: 11)
     (1, 11),
     (2, 11),
 
-    -- Byte Masters (Team ID: 12)
+    -- Byte Masters (participant ID: 12)
     (3, 12),
     (4, 12),
     (5, 12),
 
-    -- Code Warriors (Team ID: 13)
+    -- Code Warriors (participant ID: 13)
     (6, 13),
     (7, 13),
 
-    -- Dev Dynamos (Team ID: 14)
+    -- Dev Dynamos (participant ID: 14)
     (8, 14),
     (9, 14),
     (10, 14),
 
-    -- Elite Hackers (Team ID: 15)
+    -- Elite Hackers (participant ID: 15)
     (1, 15),
     (3, 15);
 --creating a competition of 3 hours long
@@ -48,8 +48,8 @@ INSERT INTO "competitions" ("id", "creator_id", "name", "duration", "starting_ti
 VALUES (1, 2, 'Hackathon Challenge', 180, '2025-02-15 10:00:00', '2025-02-15 13:00:00', 20);
 
 --inserting the users into the competition
-INSERT INTO "submitters_competitions" ("competition_id", "submitter_id")
-SELECT 1, "id" FROM "submitters";
+INSERT INTO "participants_competitions" ("competition_id", "participant_id")
+SELECT 1, "id" FROM "participants";
 
 -- Showing the results of the competition named Hackathon challenge
 -- SELECT * FROM participants WHERE competition = 'Hackathon Challenge' ORDER BY rank;

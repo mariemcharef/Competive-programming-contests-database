@@ -1,38 +1,30 @@
 --table users
 
-CREATE TABLE IF NOT EXISTS
-    "submitters" (
-        "id" INTEGER,
-        "name" TEXT NOT NULL UNIQUE,
-        "type" TEXT NOT NULL CHECK ("type" in ("user","team")) ,
-        PRIMARY KEY ("id")
-    );
+
 CREATE TABLE IF NOT EXISTS
     "users" (
         "id" INTEGER PRIMARY KEY,  -- Ensure ID is primary key
         "name" TEXT NOT NULL UNIQUE,
         "mail" TEXT NOT NULL UNIQUE,
         "password" TEXT NOT NULL,
-        "rating" INTEGER DEFAULT 0,
-        FOREIGN KEY ("id") REFERENCES "submitters" ("id") ON DELETE CASCADE
+        "rating" INTEGER DEFAULT 0
     );
 
 CREATE TABLE IF NOT EXISTS
-    "teams" (
+    "participants" (--paricipant (one user) or a team (more than one)
         "id" INTEGER PRIMARY KEY,  -- Ensure ID is primary key
         "name" TEXT NOT NULL UNIQUE,
-        "users" INTEGER DEFAULT 2 CHECK ("users" IN (2, 3)),
-        FOREIGN KEY ("id") REFERENCES "submitters" ("id") ON DELETE CASCADE
+        "users" INTEGER DEFAULT 1 CHECK ("users" IN (1,2, 3))--number of users
     );
 
-    -- to enumerate team members
+    -- to enumerate participant members
 CREATE TABLE IF NOT EXISTS
-    "user_teams" (
+    "user_participants" (
         "user_id" INTEGER,
-        "team_id" INTEGER,
-        PRIMARY KEY ("user_id", "team_id"),
+        "participant_id" INTEGER,
+        PRIMARY KEY ("user_id", "participant_id"),
         FOREIGN KEY ("user_id") REFERENCES "users" ("id")ON DELETE  CASCADE,
-        FOREIGN KEY ("team_id") REFERENCES "teams" ("id")ON DELETE  CASCADE
+        FOREIGN KEY ("participant_id") REFERENCES "participants" ("id")ON DELETE  CASCADE
     );
 --table competitions
 CREATE TABLE IF NOT EXISTS
@@ -47,16 +39,16 @@ CREATE TABLE IF NOT EXISTS
         PRIMARY KEY ("id"),
         FOREIGN KEY ("creator_id") REFERENCES "users" ("id")
     );
---table teams competitions to specify the team participation in a competition
-CREATE TABLE IF NOT EXISTS
-    "submitters_competitions" (
+--table participants competitions to specify the participant participation in a competition
+CREATE TABLE IF NOT EXISTS--many to many relationship
+    "participants_competitions" (
         "competition_id" INTEGER,
-        "submitter_id" INTEGER ,
+        "participant_id" INTEGER ,
         "score" INTEGER DEFAULT "0",
         "rank" INTEGER,
-        PRIMARY KEY ("competition_id", "submitter_id"),
+        PRIMARY KEY ("competition_id", "participant_id"),
         FOREIGN KEY ("competition_id") REFERENCES "competitions" ("id"),
-        FOREIGN KEY ("submitter_id") REFERENCES "submitters" ("id")
+        FOREIGN KEY ("participant_id") REFERENCES "participants" ("id")
     );
 --table problems
 CREATE TABLE IF NOT EXISTS
@@ -94,7 +86,7 @@ CREATE TABLE IF NOT EXISTS
 CREATE TABLE IF NOT EXISTS
     "submissions" (
         "id" INTEGER,
-        "submitter_id" INTEGER,
+        "participant_id" INTEGER,
         "problem_id" INTEGER,
         "time" NUMERIC NOT NULL DEFAULT CURRENT_TIMESTAMP,
         "language" TEXT NOT NULL CHECK (
@@ -131,19 +123,19 @@ CREATE TABLE IF NOT EXISTS
         ) DEFAULT 'in_queue',
         "code" TEXT NOT NULL,
         PRIMARY KEY ("id"),
-        FOREIGN KEY ("submitter_id") REFERENCES "submitters" ("id")ON DELETE  CASCADE,
+        FOREIGN KEY ("participant_id") REFERENCES "participants" ("id")ON DELETE  CASCADE,
         FOREIGN KEY ("problem_id") REFERENCES "problems" ("id")ON DELETE  CASCADE
     );
 --table clarifications
 CREATE TABLE IF NOT EXISTS
     "clarifications" (
         "id" INTEGER,
-        "submitter_id" INTEGER,
+        "participant_id" INTEGER,
         "problem_id" INTEGER,
         "content" TEXT NOT NULL,
         PRIMARY KEY ("id"),
         FOREIGN KEY ("problem_id") REFERENCES "problems" ("id")ON DELETE  CASCADE,
-        FOREIGN KEY ("submitter_id") REFERENCES "submitters" ("id")ON DELETE  CASCADE
+        FOREIGN KEY ("participant_id") REFERENCES "participants" ("id")ON DELETE  CASCADE
     );
 --table announcements
 CREATE TABLE IF NOT EXISTS
@@ -167,8 +159,8 @@ CREATE TABLE IF NOT EXISTS
 
 --index to facilitate search of users
 CREATE INDEX IF NOT EXISTS "user_name_search" ON "users" ("username");
---index to facilitate search of teams
-CREATE INDEX IF NOT EXISTS "team_name_search" ON "teams" ("team_name");
+--index to facilitate search of participants
+CREATE INDEX IF NOT EXISTS "participant_name_search" ON "participants" ("participant_name");
 --index to facilitate search of problems
 CREATE INDEX  IF NOT EXISTS "problem_name_search" ON "problems" ("name");
 --view competitions results
@@ -176,76 +168,48 @@ CREATE VIEW IF NOT EXISTS
     "scoreboard" AS
 SELECT
     "competitions"."name" AS "competition",
-    "submitters"."submitter_name" AS "submitter",
-    "submitters_competitions"."rank" AS "rank"
+    "participants"."participant_name" AS "participant",
+    "participants_competitions"."rank" AS "rank"
 FROM
-    "submitters_competitions"
-    JOIN "submitters" ON "submitters_competitions"."submitter_id" = "submitters"."id"
-    JOIN "competitions" ON "competitions"."id" = "submitters_competitions"."competition_id"
+    "participants_competitions"
+    JOIN "participants" ON "participants_competitions"."participant_id" = "participants"."id"
+    JOIN "competitions" ON "competitions"."id" = "participants_competitions"."competition_id"
 ORDER BY
     "rank" ;
 
---view all team and users submitions
+--view all participants submitions
 CREATE VIEW IF NOT EXISTS
-"submitters_submissions" AS
+"participants_submissions" AS
 SELECT
-    "submitters"."submitter_name",
+    "participants"."participant_name",
     "submissions"."code",
     "problems"."id",
     "submissions"."judgments"
 FROM
-    "submitters"
-JOIN "submissions" ON "submissions"."submitter_id" = "submitters"."id";
+    "participants"
+JOIN "submissions" ON "submissions"."participant_id" = "participants"."id";
 
---view all user's teams
+--view all user's teams(if participant consists of more than one user it becomes a team)
 CREATE VIEW IF NOT EXISTS
-"users_teams_names" AS
+"teams_names" AS
 SELECT
-    "users"."name" AS 'user' , "teams"."name" AS 'team'
-    FROM "users" JOIN "user_teams" ON "users"."id" = "user_teams"."user_id"
-    JOIN "teams" ON "teams"."id" = "user_teams"."team_id";
+    "users"."name" AS 'user' , "participants"."name" AS 'participant'
+    FROM "users" JOIN "user_participants" ON "users"."id" = "user_participants"."user_id"
+    JOIN "participants" ON "participants"."id" = "user_participants"."participant_id"
+WHERE "participants"."users">1;
 
---create view to see all the competitions name and the submitters that participated
-CREATE VIEW IF NOT EXISTS
-"participants" AS
-SELECT
-    "competitions"."name" AS 'competition',"submitters"."name" AS 'participant', "type","rank", "score"
-    FROM "competitions"
-    JOIN "submitters_competitions" ON "submitters_competitions"."competition_id" = "competitions"."id"
-    JOIN "submitters" ON "submitters"."id" = "submitters_competitions"."submitter_id";
 -- to evitate code duplications in the database
--- to check a duplication we must insure that the code is the submitted at least twice from the same team for the same problem
--- (in certain conditions we can have different teams that submit same code for same problem or same code submitted for different problem)
+-- to check a duplication we must insure that the code is the submitted at least twice from the same participant for the same problem
+-- (in certain conditions we can have different participants that submit same code for same problem or same code submitted for different problem)
 CREATE TRIGGER IF NOT EXISTS "no_code_duplication"
 BEFORE INSERT ON submissions
 FOR EACH ROW
 WHEN EXISTS (
     SELECT 1 FROM submissions
-    WHERE submitter_id = NEW.submitter_id
+    WHERE participant_id = NEW.participant_id
     AND problem_id = NEW.problem_id
     AND code = NEW.code
 )
 BEGIN
      SELECT RAISE(ABORT, 'YOU CANNOT SUBMIT THE SAME SOLUTION TWICE');
 END;
-
-CREATE TRIGGER IF NOT EXISTS "auto_insertion_user_submitter"
-BEFORE INSERT ON "users"
-BEGIN
-    INSERT INTO "submitters"("id","name","type")
-    VALUES
-    (NEW.id, NEW.name,'user');
-END;
-
-CREATE TRIGGER IF NOT EXISTS "auto_insertion_team_submitter"
-BEFORE INSERT ON "teams"
-BEGIN
-    INSERT INTO "submitters"("id","name","type")
-    VALUES
-    (NEW.id, NEW.name,'team');
-END;
-
-
-
-
---.read schema.sql

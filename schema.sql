@@ -158,9 +158,9 @@ CREATE TABLE IF NOT EXISTS
     );
 
 --index to facilitate search of users
-CREATE INDEX IF NOT EXISTS "user_name_search" ON "users" ("username");
+CREATE INDEX IF NOT EXISTS "user_name_search" ON "users" ("name");
 --index to facilitate search of participants
-CREATE INDEX IF NOT EXISTS "participant_name_search" ON "participants" ("participant_name");
+CREATE INDEX IF NOT EXISTS "participant_name_search" ON "participants" ("name");
 --index to facilitate search of problems
 CREATE INDEX  IF NOT EXISTS "problem_name_search" ON "problems" ("name");
 --view competitions results
@@ -213,3 +213,4 @@ WHEN EXISTS (
 BEGIN
      SELECT RAISE(ABORT, 'YOU CANNOT SUBMIT THE SAME SOLUTION TWICE');
 END;
+

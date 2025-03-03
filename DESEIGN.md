@@ -52,6 +52,8 @@ The `participants` table includes:
 * `name`, the participant name as as `TEXT`,`NOT NULL`,and `UNIQUE`.
 * `users`, which specifies the number of users within this participant as `INTEGER`. This column has the `CHECK users IN (2,3)` , `DEFAULT 2`.
 (participant becomes team if the number of users is more than one )
+
+
 #### User_participants
 
 The `user_participants` table includes:
@@ -64,14 +66,15 @@ The `user_participants` table includes:
 The `competitions` table includes:
 
 * `id`, which specifies the unique ID for the compeition as an `INTEGER`. This column thus has the `PRIMARY KEY` constraint applied.
-* `creator_id`,which specifies the ID of the user who created the competition  This column thus has the `FOREIGN KEY`that references the `user` table constraint applied.
+* `creator_id`,which specifies the ID of the user who created the competition as an `INTEGER` This column thus has the `FOREIGN KEY`that references the `user` table constraint applied.
 * `name`, which specifies the competition name as `TEXT` .This column thus has the `NOT NULL` constraint applied.
 * `duration` ,  which specifies the competition duration in minutes as `Numeric` and `NOT NULL` constraint applied.
 * `starting_time`, which is the timestamp at which the competition start.
 * `ending_time`, which is the timestamp at which the competition end.
-* `penalty_time` , Penalty time for a wrong submission. Only relevant if scoreboard_type is pass-fail.
+* `penalty_time` , Penalty time for a wrong submission.
 
-#### participants_Competitions
+
+#### participant_Competition
 
 The `participants_competitions` table includes:
 
@@ -88,9 +91,10 @@ The `problems` table includes:
 * `competition_id`, which specifies the unique ID for the competition as an `INTEGER`. This column thus has the `FOREIGN KEY` that references the `competition` table constraint applied.
 * `label` , Label of the problem on the scoreboard, as `TEXT` typically a single capitalized letter and `NOT NULL`.
 * `name`, which is the name of the problem set as `TEXT`.This column thus has the `UNIQUE` and `NOT NULL` constraint applied.
-* `time_limit` , Time limit in seconds per test data set (i.e. per single run). Should be a `NUMERIC` multiple of 0.001 and `NOT NULL`.
-* `memory_limit` , Memory limit in megabytes (MB) per test dataset (i.e., per single run). Should be a NUMERIC multiple of 1
+* `time_limit` , Time limit in milliseconds per test data set (i.e. per single run). Should be a `NUMERIC`  and `NOT NULL`.
+* `memory_limit` , Memory limit in megabytes (MB) per test dataset (i.e., per single run). Should be a `NUMERIC` multiple of 1
 * `content` , the content of the problem as `TEXT` ant `NOT NULL`.
+* `rating` , the content of the problem as `NUMERIC`.
 
 #### Test_cases
 
@@ -101,7 +105,7 @@ The `test_cases` table includes:
 * `input`, which the input of the test as `TEXT`,`NOT NULL`.
 * `output`, the expected output of the test as `TEXT`,`NOT NULL`.
 * `explanation` ,expanation of the test if it is necessary as `TEXT`.
-* `hidden`, which Specifies whether this test case is displayed (1) with the problem content or hidden (0) `CHECK IN(0,1)` ,`NOT NULL` and `DEFAULT 0`
+* `hidden`, which Specifies whether this test case is displayed (0) with the problem content or hidden (1) `CHECK IN(0,1)` ,`NOT NULL` and `DEFAULT 1`
 #### Topics
 
 The `topics` table includes:
@@ -124,8 +128,8 @@ The `submissions` table includes:
 * `participant_id`, which is the ID of the participant(one user or team) who made the submission as an `INTEGER`. This column thus has the `FOREIGN KEY` constraint applied, referencing the `id` column in the `participant` table to ensure data integrity.
 * `problem_id`, which is the ID of the problem which the submission solves as an `INTEGER`. This column thus has the `FOREIGN KEY` constraint applied, referencing the `id` column in the `problems` table to ensure data integrity.
 * `time`, `timestamp` of when the submission was made, defaults to the current timestamp when a new row is inserted.
-* `language`, Identifier of the language submitted for `TEXT`, `CHECK IN(ada,c,cpp,csharp,go,haskell,java,javascript,kotlin,objectivec,pascal,php,prolog,python2,python3,ruby,rust,scala)` and `NOT NULL`.
-* `judgement`,the result of the submition `CHECK IN (in_queue,accepted,wrong_answer,time_limit_exceeded,memory_limit_exceeded,compilation_error)`, `DEFAULT in_queue`.
+* `language`, Identifier of the language submitted for, as`TEXT`, `CHECK IN(ada,c,cpp,csharp,go,haskell,java,javascript,kotlin,objectivec,pascal,php,prolog,python2,python3,ruby,rust,scala)` and `NOT NULL`.
+* `judgement`,as`TEXT,the result of the submition `CHECK IN (in_queue,accepted,wrong_answer,time_limit_exceeded,memory_limit_exceeded,compilation_error)`, `DEFAULT in_queue`.
 * `code` , the solution of the problem as `TEXT`, `NOT NULL`.
 
 #### Clarifications

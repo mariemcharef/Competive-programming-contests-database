@@ -589,3 +589,338 @@ signed main() {
     }
 }
 ');
+--inserting a problem for the competition Hackathon challenge
+INSERT INTO "problems" ("id", "competition_id", "label", "name", "time_limit", "memory_limit","content")
+VALUES(2,1,'B','Three-Dimensional Embedding', 2000, 1024,
+'An embedding of a graph in a space is a way of placing each vertex at a distinct point in that space
+and drawing each edge as a simple arc connecting its two vertices, so that no two arcs intersect except
+at a shared vertex. In this problem, we focus on embeddings in a three-dimensional space under certain
+conditions.
+You are given a simple undirected graph with n vertices and m edges, which means there is at most one
+edge connecting any pair of vertices and each edge connects different vertices. The vertices are numbered
+from 1 to n, and the edges are numbered from 1 to m. Edge j connects the two distinct vertices vj and
+wj . Each vertex is incident to at most five edges.
+Find an embedding of the graph such that all of the following conditions are satisfied.
+• Each vertex i is embedded as a point (xi
+, yi
+, 0) in the space. The coordinates xi and yi must be
+integers between 0 and 400, inclusive. All points must have distinct coordinates.
+• Each edge j is embedded as a polyline (a connected series of line segments) with the embedded
+points for vertices vj and wj as its endpoints. Each segment of the polyline must be parallel to
+the x-, y-, or z-axis. Each node of the polyline must have integer coordinates between 0 and 400,
+inclusive. Each polyline must have no more than 30 nodes, counting its endpoints.
+• Polylines must not have self-intersections. Distinct polylines must not share any point, except when
+they correspond to edges incident to the same vertex. In that case, they may share only that single
+endpoint.
+
+
+');
+
+
+INSERT INTO "test_cases"("id", "problem_id" , "input", "output", "explanation","hidden")
+VALUES (3,2,
+'3 3
+1 2
+1 3
+2 3
+',
+'0 0
+400 0
+0 399
+3 0 0 0 100 0 0 400 0 0
+4 0 0 0 0 0 200 0 399 200 0 399 0
+3 400 0 0 400 399 0 0 399 0',
+'Notes on special judging:
+You are provided with a command-line tool for local testing. You can download the file from the contest
+materials. The tool has comments at the top to explain its use.
+Explanation for the sample input/output #1
+Figure 1 illustrates the embedding represented by the sample output',
+ 0);
+
+
+UPDATE "problems"
+SET "content" = 'An embedding of a graph in a space is a way of placing each vertex at a distinct point in that space
+and drawing each edge as a simple arc connecting its two vertices, so that no two arcs intersect except
+at a shared vertex. In this problem, we focus on embeddings in a three-dimensional space under certain
+conditions.
+You are given a simple undirected graph with n vertices and m edges, which means there is at most one
+edge connecting any pair of vertices and each edge connects different vertices. The vertices are numbered
+from 1 to n, and the edges are numbered from 1 to m. Edge j connects the two distinct vertices vj and
+wj . Each vertex is incident to at most five edges.
+Find an embedding of the graph such that all of the following conditions are satisfied.
+• Each vertex i is embedded as a point (xi
+, yi
+, 0) in the space. The coordinates xi and yi must be
+integers between 0 and 400, inclusive. All points must have distinct coordinates.
+• Each edge j is embedded as a polyline (a connected series of line segments) with the embedded
+points for vertices vj and wj as its endpoints. Each segment of the polyline must be parallel to
+the x-, y-, or z-axis. Each node of the polyline must have integer coordinates between 0 and 400,
+inclusive. Each polyline must have no more than 30 nodes, counting its endpoints.
+• Polylines must not have self-intersections. Distinct polylines must not share any point, except when
+they correspond to edges incident to the same vertex. In that case, they may share only that single
+endpoint.
+Input
+The first line of input contains two integers n and m (2 ≤ n ≤ 1600, 1 ≤ m ≤ 4000). The j-th of the
+following m lines contains two integers vj and wj (1 ≤ vj < wj ≤ n).
+The input guarantees that each vertex is incident to at most five edges. Further, there are no parallel
+edges; that is, if j 6= j
+0
+, (vj , wj ) 6= (vj
+0, wj
+0) holds.
+Output
+First, output n lines. The i-th of these lines should contain two integers xi and yi
+, representing the
+coordinates where vertex i is embedded. Then, output m lines, where the j-th line represents the polyline
+corresponding to edge j, using the following format:
+k x0
+1
+y
+0
+1
+z
+0
+1
+· · · x
+0
+k
+y
+0
+k
+z
+0
+k
+Here, k is the number of nodes, which must be between 2 and 30, inclusive. The points
+(x
+0
+1
+, y0
+1
+, z0
+1
+), . . . ,(x
+0
+k
+, y0
+k
+, z0
+k
+) are the nodes of the polyline. The first point (x
+0
+1
+, y0
+1
+, z0
+1
+) must be (xvj
+, yvj
+, 0),
+and the last point (x
+0
+k
+, y0
+k
+, z0
+k
+) must be (xwj
+, ywj
+, 0). Each pair of consecutive points is connected by a
+segment to form the polyline. Each segment must have a positive length. Two consecutive segments may
+have the same orientation; for example, both can be parallel to the x-axis.
+The embedding that you output must satisfy all of the conditions mentioned above.
+Under the given input constraints, it can be shown that there exists at least one valid output. If there
+are multiple outputs, any one of them will be accepted.
+
+'
+WHERE "id" = 2;
+
+INSERT INTO "submissions"("id","participant_id","problem_id", "language", "judgement", "code")
+VALUES(4, 12, 2, 'cpp','accepted','#include <bits/stdc++.h>
+using namespace std;
+
+#define rep(i, a, b) for(int i = a; i < (b); i++)
+#define all(x) begin(x), end(x)
+#define sz(x) (int)x.size()
+
+
+using ll = long long;
+using vi = vector<int>;
+using vvi = vector<vi>;
+using pii = pair<int, int>;
+using vii = vector<pii>;
+using vl = vector<ll>;
+
+using pt = array<int, 3>;
+
+const int W = 400;
+const int K = 32;
+
+void solve() {
+    int n, m;
+    cin >> n >> m;
+
+    // lock in
+    vector<array<int, 2>> ed;
+    vector<int> deg(n);
+    for (int i = 0; i < m; i++) {
+        int u, v;
+        cin >> u >> v;
+        u--, v--;
+        ed.push_back({u, v});
+        deg[u]++;
+        deg[v]++;
+    }
+
+    vector<pt> starts(n);
+    vector<vector<pt>> pts;
+    auto get_bid = [&] (array<int, 3> p) {
+        return p[0]/(K+4);
+    };
+    auto get_row = [&] (int rid) {
+        return (K+4)*(rid/2) + (rid%2 == 0 ? 1 : K+2);
+    };
+    {
+        int rid = 0;
+        int row = get_row(rid);
+        int col = 0;
+        vector<int> lf(n);
+        for (int i = 0; i < n; i++) {
+            lf[i] = sz(pts);
+            if (deg[i] <= 1) {
+                starts[i] = {row, col};
+                pts.push_back({{row, col}});
+            }
+            else if (deg[i] == 2) {
+                starts[i] = {row, col+1};
+                pts.push_back({{row, col+1}, {row, col}});
+                pts.push_back({{row, col+1}});
+            }
+            else if (deg[i] >= 3) {
+                starts[i] = {row, col+2};
+                pts.push_back({{row, col+2}, {row-1, col+2}, {row-1, col}, {row, col}});
+                pts.push_back({{row, col+2}, {row, col+1}});
+                pts.push_back({{row, col+2}});
+                if (deg[i] >= 4) {
+                    pts.push_back({{row, col+2}, {row, col+3}});
+                }
+                if (deg[i] >= 5) {
+                    pts.push_back({{row, col+2}, {row+1, col+2}, {row+1, col+4}, {row, col+4}});
+                }
+            }
+            col += max(1, deg[i]);
+            if (col >= W-(K+6)) {
+                col = 0;
+                rid++;
+                row = get_row(rid);
+            }
+        }
+        for (auto& [u, v] : ed) {
+            u = lf[u]++;
+            v = lf[v]++;
+        }
+    }
+
+    vector<vector<pt>> res;
+
+    for (int z = 1; !ed.empty(); z += 3) {
+        // vector<int> used_lo(50), used_hi(50);
+        auto get_channel = [&] (array<int, 3> p, int c) {
+            int bid = get_bid(p);
+            return get_row(2*bid) + 1 + c;
+        };
+        auto go_to_channel = [&] (array<int, 3> p, int c) -> vector<pt> {
+            int bid = get_bid(p);
+            int channel = get_channel(p, c);
+            if (p[0] == get_row(2*bid)) {
+                return {{p[0], p[1], z}, {channel, p[1], z}, {channel, p[1], z+1}};
+            }
+            else {
+                return {{p[0], p[1], z+2}, {channel, p[1], z+2}, {channel, p[1], z+1}};
+            }
+        };
+        for (int i = 0; i < K && !ed.empty(); i++) {
+            auto [u, v] = ed.back(); ed.pop_back();
+            auto a = pts[u].back(), b = pts[v].back();
+            a[2] = z;
+            b[2] = z;
+            if (get_bid(a) == get_bid(b)) {
+                if (a[1] == b[1]) {
+                    vector<pt> tmp = pts[u];
+                    tmp.push_back(a);
+                    tmp.push_back(b);
+                    tmp.insert(tmp.end(), pts[v].rbegin(), pts[v].rend());
+                    res.push_back(tmp);
+                }
+                else {
+                    int channel = get_channel(a, i);
+                    vector<pt> tmp = pts[u];
+                    auto atoc = go_to_channel(a, i);
+                    auto btoc = go_to_channel(b, i);
+                    tmp.insert(tmp.end(), atoc.begin(), atoc.end());
+                    tmp.insert(tmp.end(), btoc.rbegin(), btoc.rend());
+                    tmp.insert(tmp.end(), pts[v].rbegin(), pts[v].rend());
+                    res.push_back(tmp);
+                }
+            }
+            else {
+                int channel_a = get_channel(a, i);
+                int channel_b = get_channel(b, i);
+                auto atoc = go_to_channel(a, i);
+                auto btoc = go_to_channel(b, i);
+                vector<pt> tmp = pts[u];
+                tmp.insert(tmp.end(), atoc.begin(), atoc.end());
+                tmp.push_back({channel_a, W-(K+1), z+1});
+                tmp.push_back({channel_a, W-(K+1), z});
+                tmp.push_back({channel_a, W-K + i, z});
+                tmp.push_back({channel_a, W-K + i, z+1});
+
+                tmp.push_back({channel_b, W-K + i, z+1});
+                tmp.push_back({channel_b, W-K + i, z});
+                tmp.push_back({channel_b, W-(K+1), z});
+                tmp.push_back({channel_b, W-(K+1), z+1});
+                tmp.insert(tmp.end(), btoc.rbegin(), btoc.rend());
+                tmp.insert(tmp.end(), pts[v].rbegin(), pts[v].rend());
+                res.push_back(tmp);
+            }
+        }
+    }
+
+    ranges::reverse(res);
+
+    for (int i = 0; i < n; i++) {
+        cout << starts[i][0] << " " << starts[i][1] << " " << "\n";
+    }
+    for (int i = 0; i < m; i++) {
+        cout << sz(res[i]) << " ";
+        for (auto [x, y, z] : res[i]) cout << x << " " <<  y << " " << z << " ";
+        cout << "\n";
+    }
+}
+
+int main() {
+    cin.tie(0)->sync_with_stdio(0);
+    cin.exceptions(cin.failbit);
+
+    solve();
+
+    return 0;
+}');
+
+UPDATE "participants_competitions"
+SET "score" = 550, "rank" = 1
+WHERE "participant_id" = 12;
+UPDATE "participants_competitions"
+SET "score" = 450, "rank" = 2
+WHERE "participant_id" = 11;
+UPDATE "participants_competitions"
+SET "score" = 300, "rank" = 3
+WHERE "participant_id" = 13;
+UPDATE "participants_competitions"
+SET "score" = 200, "rank" = 4
+WHERE "participant_id" = 14;
+UPDATE "participants_competitions"
+SET "score" = 100, "rank" = 5
+WHERE "participant_id" = 15;
+
+
+

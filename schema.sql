@@ -60,6 +60,7 @@ CREATE TABLE IF NOT EXISTS
         "time_limit" NUMERIC NOT NULL,
         "memory_limit" INTEGER NOT NULL,
         "content" TEXT NOT NULL,
+        "rating" NUMERIC,
         PRIMARY KEY ("id"),
         FOREIGN KEY ("competition_id") REFERENCES "competitions" ("id") ON DELETE  CASCADE
     );
@@ -151,7 +152,7 @@ CREATE TABLE IF NOT EXISTS
 CREATE TABLE IF NOT EXISTS
     "problems_topics" (
         "problem_id" INTEGER,
-        "topic_id" TEXT NOT NULL UNIQUE,
+        "topic_id" INTEGER,
         PRIMARY KEY ("problem_id", "topic_id"),
         FOREIGN KEY ("problem_id") REFERENCES "problems" ("id")ON DELETE  CASCADE,
         FOREIGN KEY ("topic_id") REFERENCES "topics" ("id")
@@ -163,13 +164,16 @@ CREATE INDEX IF NOT EXISTS "user_name_search" ON "users" ("name");
 CREATE INDEX IF NOT EXISTS "participant_name_search" ON "participants" ("name");
 --index to facilitate search of problems
 CREATE INDEX  IF NOT EXISTS "problem_name_search" ON "problems" ("name");
+
+
 --view competitions results
 CREATE VIEW IF NOT EXISTS
     "scoreboard" AS
 SELECT
     "competitions"."name" AS "competition",
-    "participants"."participant_name" AS "participant",
-    "participants_competitions"."rank" AS "rank"
+    "participants"."name" AS "participant",
+    "participants_competitions"."rank" AS "rank",
+    "participants_competitions"."score" AS "score"
 FROM
     "participants_competitions"
     JOIN "participants" ON "participants_competitions"."participant_id" = "participants"."id"
@@ -181,19 +185,22 @@ ORDER BY
 CREATE VIEW IF NOT EXISTS
 "participants_submissions" AS
 SELECT
-    "participants"."participant_name",
-    "submissions"."code",
-    "problems"."id",
-    "submissions"."judgments"
+    "participants"."name",
+    "competitions"."name" AS 'competition',
+    "problems"."name"AS "problem",
+    "submissions"."code" AS 'code',
+    "submissions"."judgement" AS'judgement'
 FROM
     "participants"
-JOIN "submissions" ON "submissions"."participant_id" = "participants"."id";
+    JOIN "submissions" ON "submissions"."participant_id" = "participants"."id"
+    JOIN "problems" ON "problems"."id" = "submissions"."problem_id"
+    JOIN "competitions" ON "competitions"."id" = "problems"."competition_id";
 
 --view all user's teams(if participant consists of more than one user it becomes a team)
 CREATE VIEW IF NOT EXISTS
 "teams_names" AS
 SELECT
-    "users"."name" AS 'user' , "participants"."name" AS 'participant'
+    "users"."name" AS 'user' , "participants"."name" AS 'team'
     FROM "users" JOIN "user_participants" ON "users"."id" = "user_participants"."user_id"
     JOIN "participants" ON "participants"."id" = "user_participants"."participant_id"
 WHERE "participants"."users">1;
@@ -213,4 +220,31 @@ WHEN EXISTS (
 BEGIN
      SELECT RAISE(ABORT, 'YOU CANNOT SUBMIT THE SAME SOLUTION TWICE');
 END;
+
+--View to observe the creators of each competition
+CREATE VIEW IF NOT EXISTS
+"competitions_view" AS
+SELECT "competitions"."name","duration", "starting_time", "ending_time", "penalty_time" , "users"."name" AS 'creator'
+FROM "competitions" JOIN "users" ON "competitions"."creator_id" = "users"."id";
+
+--View to visualise the problems names and their topics names
+CREATE VIEW IF NOT EXISTS
+"problems_topics_view" AS
+SELECT "problems"."name" AS 'problem', "topics"."name" AS 'topic'
+FROM "problems"
+JOIN "problems_topics" ON "problems_topics"."problem_id" = "problems"."id"
+JOIN "topics" ON "topics"."id"  = "problems_topics"."topic_id";
+--problems how they are disbled to the user
+CREATE VIEW IF NOT EXISTS "problems_view" AS
+SELECT
+    "problems"."label" AS "#",
+    "problems"."name" AS "name",
+    (SELECT COUNT(*)
+     FROM "submissions"
+     WHERE "submissions"."problem_id" = "problems"."id"
+     AND "submissions"."judgement" = 'accepted'
+    ) AS "solved by"
+FROM "problems"
+ORDER BY "problems"."label";
+
 

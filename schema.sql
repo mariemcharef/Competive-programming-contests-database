@@ -1,9 +1,7 @@
---table users
-
-
+--users table
 CREATE TABLE IF NOT EXISTS
     "users" (
-        "id" INTEGER PRIMARY KEY,  -- Ensure ID is primary key
+        "id" INTEGER PRIMARY KEY,
         "name" TEXT NOT NULL UNIQUE,
         "mail" TEXT NOT NULL UNIQUE,
         "password" TEXT NOT NULL,
@@ -234,7 +232,8 @@ SELECT "problems"."name" AS 'problem', "topics"."name" AS 'topic'
 FROM "problems"
 JOIN "problems_topics" ON "problems_topics"."problem_id" = "problems"."id"
 JOIN "topics" ON "topics"."id"  = "problems_topics"."topic_id";
---problems how they are disbled to the user
+
+--this view shows how the problemset is displayed to users
 CREATE VIEW IF NOT EXISTS "problems_view" AS
 SELECT
     "problems"."label" AS "#",
@@ -246,5 +245,6 @@ SELECT
     ) AS "solved by"
 FROM "problems"
 ORDER BY "problems"."label";
+
 
 

@@ -2,7 +2,7 @@
 
 By Mohamed Bouafif  and  Mariem Charef
 
-Video overview: (Normally there would be a URL here, but not for this sample assignment!)
+Video overview: https://www.youtube.com/watch?v=FfRpXbwEask
 
 ## Scope
 
@@ -154,7 +154,7 @@ The `anouncements` table includes:
 
 The below entity relationship diagram describes the relationships among the entities in the database.
 
-![ER Diagram](diagram.jpg)
+![ER Diagram](diagram.png)
 
 As detailed by the diagram:
 
@@ -178,7 +178,9 @@ And, it is common practice for a database user to view the members of one team(p
 
 Also, it is common practice for a database user to view the results of any competition as a table of participants sorted by rank. AS such,A view is created to sort all participants by their rank in a competition.
 
+
 ## Limitations
+
 Lack of social communication – Users cannot connect, add friends, or follow others, limiting engagement and collaboration.
 
 Users cannot collaborate to create a competition, the competition is created by one person.
